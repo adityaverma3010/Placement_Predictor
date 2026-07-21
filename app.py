@@ -1,210 +1,379 @@
 # ============================================================
-# Placement IQ
 # Student Placement Prediction System
 # ============================================================
 
-import streamlit as st
+import logging
+
 import pandas as pd
-import pickle
+import streamlit as st
+import plotly.express as px
+
+import src.logger
+
+from config.config import MODEL_PATH
+from src.predict import PredictionPipeline
+from src.utils import load_object
 
 # ============================================================
 # Page Configuration
 # ============================================================
 
 st.set_page_config(
-    page_title="Placement IQ",
+    page_title="Student Placement Prediction System",
     page_icon="🎓",
-    layout="centered"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# Load Model & Scaler
+# Custom CSS
 # ============================================================
 
-with open("models/placement_model.pkl", "rb") as file:
-    model = pickle.load(file)
+st.markdown(
+    """
+<style>
 
-with open("models/scaler.pkl", "rb") as file:
-    scaler = pickle.load(file)
+.block-container{
+    padding-top:2rem;
+    padding-bottom:2rem;
+}
+
+div.stButton > button{
+    width:100%;
+    height:50px;
+    font-size:18px;
+    border-radius:12px;
+    background-color:#2563eb;
+    color:white;
+}
+
+div[data-testid="metric-container"]{
+    border:1px solid #E5E7EB;
+    border-radius:12px;
+    padding:15px;
+}
+
+</style>
+""",
+    unsafe_allow_html=True
+)
 
 # ============================================================
-# Title
+# Load Pipeline
 # ============================================================
 
-st.title("🎓 Placement IQ")
-st.subheader("Student Placement Prediction System")
+logging.info("Loading Trained Pipeline")
 
-st.write("""
-This application predicts whether a student is likely to be placed
-based on academic performance, internship experience,
-communication skills, and project experience.
-""")
+pipeline = load_object(MODEL_PATH)
+
+predictor = PredictionPipeline(pipeline)
+
+logging.info("Pipeline Loaded Successfully")
+
+# ============================================================
+# Header
+# ============================================================
+
+st.markdown("""
+<div style="
+background:linear-gradient(90deg,#2563EB,#3B82F6);
+padding:30px;
+border-radius:15px;
+text-align:center;
+color:white;
+">
+
+<h1>🎓 Student Placement Prediction System</h1>
+
+<h4>Predict student placement using Machine Learning</h4>
+
+</div>
+
+<br>
+""", unsafe_allow_html=True)
 
 st.divider()
+# ============================================================
+# Dashboard Layout
+# ============================================================
+
+left_col, right_col = st.columns([1, 2], gap="large")
 
 # ============================================================
-# User Inputs
+# LEFT PANEL
 # ============================================================
 
-iq = st.number_input(
-    "IQ",
-    min_value=41,
-    max_value=158,
-    value=100
-)
+with left_col:
 
-prev_sem = st.number_input(
-    "Previous Semester Result",
-    min_value=5.0,
-    max_value=10.0,
-    value=7.5,
-    step=0.01
-)
+    st.subheader("📋 Student Details")
 
-cgpa = st.number_input(
-    "CGPA",
-    min_value=4.5,
-    max_value=10.5,
-    value=7.5,
-    step=0.01
-)
-
-academic = st.slider(
-    "Academic Performance",
-    1,
-    10,
-    6
-)
-
-internship = st.radio(
-    "Internship Experience",
-    ["Yes", "No"]
-)
-
-internship = 1 if internship == "Yes" else 0
-
-extra = st.slider(
-    "Extra Curricular Score",
-    0,
-    10,
-    5
-)
-
-communication = st.slider(
-    "Communication Skills",
-    1,
-    10,
-    6
-)
-
-projects = st.slider(
-    "Projects Completed",
-    0,
-    5,
-    2
-)
-
-
-
-if st.button("Predict Placement"):
-
-    input_data = pd.DataFrame([[
-        iq,
-        prev_sem,
-        cgpa,
-        academic,
-        internship,
-        extra,
-        communication,
-        projects
-    ]], columns=[
+    iq = st.number_input(
         "IQ",
-        "Prev_Sem_Result",
+        min_value=41,
+        max_value=158,
+        value=100
+    )
+
+    prev_sem = st.number_input(
+        "Previous Semester Result",
+        min_value=5.0,
+        max_value=10.0,
+        value=7.5,
+        step=0.01
+    )
+
+    cgpa = st.number_input(
         "CGPA",
-        "Academic_Performance",
-        "Internship_Experience",
-        "Extra_Curricular_Score",
-        "Communication_Skills",
-        "Projects_Completed"
-    ])
+        min_value=4.5,
+        max_value=10.0,
+        value=7.5,
+        step=0.01
+    )
 
-    
-    input_scaled = scaler.transform(input_data)
+    academic = st.slider(
+        "Academic Performance",
+        1,
+        10,
+        6
+    )
 
-    
-    prediction = model.predict(input_scaled)
+    internship = st.radio(
+        "Internship Experience",
+        ["Yes", "No"]
+    )
 
-    
-    probability = model.predict_proba(input_scaled)
+    internship = 1 if internship == "Yes" else 0
 
-    st.divider()
+    extra = st.slider(
+        "Extra Curricular Score",
+        0,
+        10,
+        5
+    )
 
-    st.subheader("Prediction Result")
+    communication = st.slider(
+        "Communication Skills",
+        1,
+        10,
+        6
+    )
 
-    if prediction[0] == 1:
-        st.success("🎉 Student is likely to be Placed")
-    else:
-        st.error("❌ Student is likely to be Not Placed")
+    projects = st.slider(
+        "Projects Completed",
+        0,
+        5,
+        2
+    )
 
-    st.write("### Prediction Probability")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    st.progress(float(probability[0][1]))
+    predict_button = st.button(
+        "🚀 Predict Placement",
+        use_container_width=True
+    )
 
-    col1, col2 = st.columns(2)
+# ============================================================
+# RIGHT PANEL
+# ============================================================
 
-    with col1:
-        st.metric(
-            "Placed",
-            f"{probability[0][1]*100:.2f}%"
+with right_col:
+
+    st.subheader("📊 Prediction Dashboard")
+
+    prediction_container = st.container()
+
+    with prediction_container:
+
+        st.info(
+            "👈 Enter the student's details on the left and click **Predict Placement**."
         )
+# ============================================================
+# Prediction
+# ============================================================
 
-    with col2:
-        st.metric(
-            "Not Placed",
-            f"{probability[0][0]*100:.2f}%"
-        )
-    
-    
-    st.divider()
-    st.subheader("📌 Personalized Suggestions")
+if predict_button:
 
-    suggestions = []
+    try:
 
-    if cgpa < 7:
-        suggestions.append("📚 Improve your CGPA to at least 7.5 or above.")
+        input_data = {
+            "IQ": iq,
+            "Prev_Sem_Result": prev_sem,
+            "CGPA": cgpa,
+            "Academic_Performance": academic,
+            "Internship_Experience": internship,
+            "Extra_Curricular_Score": extra,
+            "Communication_Skills": communication,
+            "Projects_Completed": projects
+        }
 
-    if internship == 0:
-        suggestions.append("💼 Complete at least one internship to gain practical experience.")
+        prediction, probability = predictor.predict(input_data)
 
-    if communication < 6:
-        suggestions.append("🗣️ Improve your communication skills by participating in presentations and mock interviews.")
+        # ====================================================
+        # RIGHT PANEL
+        # ====================================================
 
-    if projects < 3:
-        suggestions.append("💻 Build more real-world projects and upload them to GitHub.")
+        with right_col:
 
-    if extra < 5:
-        suggestions.append("🏆 Participate in extracurricular activities to strengthen your profile.")
+            st.subheader("📊 Prediction Dashboard")
 
-    if academic < 6:
-        suggestions.append("📖 Focus on improving your academic performance.")
+            # --------------------------------------------
+            # Result
+            # --------------------------------------------
 
-    if iq < 90:
-        suggestions.append("🧠 Practice aptitude and logical reasoning regularly.")
+            if prediction == 1:
+                st.success("🎉 Student is Likely to be Placed")
+            else:
+                st.error("❌ Student is Likely to be Not Placed")
 
-    if prediction[0] == 1:
-        st.success("🎉 Your profile looks promising for campus placements.")
-        st.info("Keep learning, practice aptitude, and prepare well for interviews.")
+            st.write("### Placement Probability")
 
-    if suggestions:
-        st.warning("Areas for Improvement")
+            st.progress(float(probability[1]))
 
-        for suggestion in suggestions:
-            st.write("•", suggestion)
-    else:
-        st.success("✅ Excellent! No major improvements are required.")
+            # --------------------------------------------
+            # Metrics
+            # --------------------------------------------
 
-    st.divider()
+            metric1, metric2 = st.columns(2)
 
-    st.subheader("Student Details")
+            with metric1:
 
-    st.dataframe(input_data, use_container_width=True)
+                st.metric(
+                    "Placed",
+                    f"{probability[1]*100:.2f}%"
+                )
+
+            with metric2:
+
+                st.metric(
+                    "Not Placed",
+                    f"{probability[0]*100:.2f}%"
+                )
+
+            st.divider()
+
+            # --------------------------------------------
+            # Chart + Suggestions
+            # --------------------------------------------
+
+            chart_col, suggestion_col = st.columns(2)
+
+            # ==========================================
+            # Pie Chart
+            # ==========================================
+
+            with chart_col:
+
+                st.subheader("📈 Probability Distribution")
+
+                chart_data = pd.DataFrame(
+                    {
+                        "Status": [
+                            "Placed",
+                            "Not Placed"
+                        ],
+
+                        "Probability": [
+                            probability[1] * 100,
+                            probability[0] * 100
+                        ]
+                    }
+                )
+
+                fig = px.pie(
+                    chart_data,
+                    names="Status",
+                    values="Probability",
+                    hole=0.5,
+                    color="Status",
+                    color_discrete_map={
+                        "Placed": "#22c55e",
+                        "Not Placed": "#ef4444"
+                    }
+                )
+
+                fig.update_traces(
+                    textposition="inside",
+                    textinfo="percent+label"
+                )
+
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
+
+            # ==========================================
+            # Suggestions
+            # ==========================================
+
+            with suggestion_col:
+
+                st.subheader("📌 Suggestions")
+
+                suggestions = []
+
+                if cgpa < 7:
+                    suggestions.append(
+                        "📚 Improve CGPA to 7.5 or above."
+                    )
+
+                if internship == 0:
+                    suggestions.append(
+                        "💼 Complete at least one internship."
+                    )
+
+                if communication < 6:
+                    suggestions.append(
+                        "🗣️ Improve communication skills."
+                    )
+
+                if projects < 3:
+                    suggestions.append(
+                        "💻 Build more projects."
+                    )
+
+                if extra < 5:
+                    suggestions.append(
+                        "🏆 Participate in extracurricular activities."
+                    )
+
+                if academic < 6:
+                    suggestions.append(
+                        "📖 Improve academic performance."
+                    )
+
+                if iq < 90:
+                    suggestions.append(
+                        "🧠 Practice aptitude regularly."
+                    )
+
+                if suggestions:
+
+                    for s in suggestions:
+                        st.write("•", s)
+
+                else:
+
+                    st.success(
+                        "✅ Excellent profile! Keep improving."
+                    )
+
+            st.divider()
+
+            # ==========================================
+            # Student Details
+            # ==========================================
+
+            st.subheader("📋 Student Details")
+
+            student_df = pd.DataFrame([input_data])
+
+            st.dataframe(
+                student_df,
+                use_container_width=True
+            )
+
+    except Exception as e:
+
+        st.error(f"Error : {e}")
+
+st.caption("Student Placement Prediction - AI & ML Internship Capstone - PaulTech Software Services")
