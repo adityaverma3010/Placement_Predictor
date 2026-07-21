@@ -26,6 +26,114 @@ st.set_page_config(
 )
 
 # ============================================================
+# Sidebar - Project Information
+# ============================================================
+
+with st.sidebar:
+
+    st.title("🎓 Placement Predictor")
+
+    st.divider()
+
+    st.subheader("📌 About Project")
+
+    st.write(
+        """
+        **Student Placement Prediction System** is an 
+        AI & Machine Learning based application that predicts 
+        whether a student is likely to get placed based on 
+        academic and skill-related factors.
+        """
+    )
+
+    st.divider()
+
+    st.subheader("🎯 Objective")
+
+    st.write(
+        """
+        • Predict placement probability of students  
+        • Identify important placement factors  
+        • Provide improvement suggestions  
+        • Assist students in career preparation
+        """
+    )
+
+    st.divider()
+
+    st.subheader("🤖 Machine Learning Model")
+
+    st.write(
+        """
+        **Algorithm Used:**
+
+        Logistic Regression
+
+        **Type:**
+
+        Supervised Learning  
+        Classification Algorithm
+        """
+    )
+
+    st.divider()
+
+    st.subheader("📊 Dataset Information")
+
+    st.write(
+        """
+        Dataset contains student academic and skill details.
+
+        **Features Used:**
+
+        • IQ  
+        • Previous Semester Result  
+        • CGPA  
+        • Academic Performance  
+        • Internship Experience  
+        • Extra Curricular Score  
+        • Communication Skills  
+        • Projects Completed
+        """
+    )
+
+    st.divider()
+
+    st.subheader("🛠 Technology Stack")
+
+    st.write(
+        """
+        **Programming Language**
+        - Python
+
+        **Libraries**
+        - Pandas
+        - Scikit-learn
+        - Streamlit
+        - Plotly
+        - NumPy
+
+        **Model Deployment**
+        - Streamlit Web Application
+        """
+    )
+
+    st.divider()
+
+    st.subheader("📈 Model Performance")
+
+    st.metric(
+        "Testing Accuracy",
+        "90.35%"
+    )
+
+    st.divider()
+
+    st.caption(
+        "Developed as AI & ML Internship Capstone Project"
+    )
+
+# ============================================================
 # Custom CSS
 # ============================================================
 
