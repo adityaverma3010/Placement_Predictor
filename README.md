@@ -1,4 +1,8 @@
 # Student Placement Prediction System
+## Live Demo
+
+Streamlit App:
+https://your-app-url.streamlit.app
 
 ## Project Overview
 
