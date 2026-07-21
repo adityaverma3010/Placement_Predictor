@@ -105,7 +105,7 @@ left_col, right_col = st.columns([1, 2], gap="large")
 
 with left_col:
 
-    st.subheader("📋 Student Details")
+    st.subheader(" Student Details")
 
     iq = st.number_input(
         "IQ",
@@ -168,7 +168,7 @@ with left_col:
     st.markdown("<br>", unsafe_allow_html=True)
 
     predict_button = st.button(
-        "🚀 Predict Placement",
+        " Predict Placement",
         use_container_width=True
     )
 
@@ -178,7 +178,7 @@ with left_col:
 
 with right_col:
 
-    st.subheader("📊 Prediction Dashboard")
+    st.subheader(" Prediction Dashboard")
 
     prediction_container = st.container()
 
@@ -214,16 +214,16 @@ if predict_button:
 
         with right_col:
 
-            st.subheader("📊 Prediction Dashboard")
+            st.subheader(" Prediction Dashboard")
 
             # --------------------------------------------
             # Result
             # --------------------------------------------
 
             if prediction == 1:
-                st.success("🎉 Student is Likely to be Placed")
+                st.success(" Student is Likely to be Placed")
             else:
-                st.error("❌ Student is Likely to be Not Placed")
+                st.error(" Student is Likely to be Not Placed")
 
             st.write("### Placement Probability")
 
@@ -263,7 +263,7 @@ if predict_button:
 
             with chart_col:
 
-                st.subheader("📈 Probability Distribution")
+                st.subheader(" Probability Distribution")
 
                 chart_data = pd.DataFrame(
                     {
@@ -313,37 +313,37 @@ if predict_button:
 
                 if cgpa < 7:
                     suggestions.append(
-                        "📚 Improve CGPA to 7.5 or above."
+                        " Improve CGPA to 7.5 or above."
                     )
 
                 if internship == 0:
                     suggestions.append(
-                        "💼 Complete at least one internship."
+                        " Complete at least one internship."
                     )
 
                 if communication < 6:
                     suggestions.append(
-                        "🗣️ Improve communication skills."
+                        " Improve communication skills."
                     )
 
                 if projects < 3:
                     suggestions.append(
-                        "💻 Build more projects."
+                        " Build more projects."
                     )
 
                 if extra < 5:
                     suggestions.append(
-                        "🏆 Participate in extracurricular activities."
+                        " Participate in extracurricular activities."
                     )
 
                 if academic < 6:
                     suggestions.append(
-                        "📖 Improve academic performance."
+                        " Improve academic performance."
                     )
 
                 if iq < 90:
                     suggestions.append(
-                        "🧠 Practice aptitude regularly."
+                        " Practice aptitude regularly."
                     )
 
                 if suggestions:
@@ -354,7 +354,7 @@ if predict_button:
                 else:
 
                     st.success(
-                        "✅ Excellent profile! Keep improving."
+                        " Excellent profile! Keep improving."
                     )
 
             st.divider()
@@ -363,7 +363,7 @@ if predict_button:
             # Student Details
             # ==========================================
 
-            st.subheader("📋 Student Details")
+            st.subheader(" Student Details")
 
             student_df = pd.DataFrame([input_data])
 
