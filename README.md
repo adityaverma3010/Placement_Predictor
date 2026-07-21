@@ -2,8 +2,7 @@
 ## Live Demo
 
 Streamlit App:
-https://your-app-url.streamlit.app
-
+https://placementpredictor3010.streamlit.app/
 ## Project Overview
 
 The **Student Placement Prediction System** is a Machine Learning-based project that predicts whether a student is likely to get placed or not based on academic performance, skills, and other placement-related factors.
